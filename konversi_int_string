@@ -1,0 +1,6 @@
+char label[100]={"0"};
+
+    sprintf(label,"%f",time); //konversi time ke label
+
+    printf("%s",label);
+
