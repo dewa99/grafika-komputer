@@ -1,0 +1,197 @@
+#include <GL/glut.h>
+#include <stdlib.h>
+#include <stdio.h>
+
+#include "objek.h" //Include file objek.h dan get class nya ini untuk OOP
+
+float x;
+float y;
+//google
+float ortho[] = {-10, 10, -10, 10};
+//kiri kanan bawah atas
+int sleep = 50;
+bool kanan[2] = {true , false};
+int skor = 1;
+
+
+cube kotak1(-10, 5, 1, 1);
+cube kotak2(7, 5, 5, 5);
+
+void garis()
+{
+	glColor3f(0, 1, 0);
+	glBegin(GL_LINE_LOOP);
+	glVertex2f(ortho[0], ortho[2]);
+	glVertex2f(ortho[0], ortho[3]);
+	glVertex2f(ortho[1], ortho[3]);
+	glVertex2f(ortho[1], ortho[2]);
+	glEnd();
+}
+
+void cube1()
+{
+    char label[100]={"0"};
+
+    sprintf(label,"%i",skor); //konversi time ke label
+
+printf("%s",label);
+	kotak1.draw();
+	kotak1.displayText(0,0,1,1,1,label);
+}
+
+void cube2()
+{
+	kotak2.draw();
+}
+
+void control()
+{
+	// if (kotak1.check_collision(kotak2.attr()[0], kotak2.attr()[1], kotak2.attr()[2], kotak2.attr()[3]))
+	// {
+	// 	// kanan[0] = kanan[0] ? false : true;
+	// 	printf("check true \n");
+	// }
+
+	// if (kotak2.check_collision(kotak1.attr()[0], kotak1.attr()[1], kotak1.attr()[2], kotak1.attr()[3]))
+	// {
+	// 	// kanan[1] = kanan[1] ? false : true;
+	// 	printf("check2 true \n");
+	// }
+
+
+	if (kotak1.check_line_collision(ortho[0],ortho[1],ortho[2],ortho[3]))
+	{
+		// kanan[0] = kanan[0] ? false : true;
+		// char pos[5] = check_ortho[1] ? "atas" : (check_ortho[2] ? "kanan" : (check_ortho[3] ? "bawah" : (check_ortho[4] ? "kiri" : "oow" )));
+		printf("check ortho true \n" );
+	}else{
+		printf("check ortho false \n" );
+	}
+
+	if (kotak2.check_line_collision(ortho[0],ortho[1],ortho[2],ortho[3]))
+	{
+		//kanan[1] = kanan[1] ? false : true;
+		// char pos[5] = check_ortho[1] ? "atas" : (check_ortho[2] ? "kanan" : (check_ortho[3] ? "bawah" : (check_ortho[4] ? "kiri" : "oow" )));
+		printf("check2 ortho true \n" );
+	}else{
+		printf("check2 ortho false \n" );
+	}
+
+	glPushMatrix();
+	if (kotak1.check_collision(kotak2.attr()[0], kotak2.attr()[1], kotak2.attr()[2], kotak2.attr()[3])){
+	glColor3f(2, 1, 0);
+	skor +=1;
+	}
+	else{
+	glColor3f(0, 1, 0);
+	}
+	cube1();
+	glPopMatrix();
+
+	glPushMatrix();
+	if (kotak2.check_collision(kotak1.attr()[0], kotak1.attr()[1], kotak1.attr()[2], kotak1.attr()[3]))
+	glColor3f(0, 1, 1);
+	else
+	glColor3f(0, 0, 1);
+	cube2();
+	glPopMatrix();
+
+}
+
+void motionkotak(int a)
+{
+    if(kanan[0])
+	{ // objek pertama
+		kotak1.x += 1;
+	}else{
+		kotak1.x -= 1;
+	}
+
+	if(kanan[1])
+	{ // objek pertama
+		kotak2.x += 1;
+	}else{
+		kotak2.x -= 1;
+	}
+	printf("%d \n" , kotak1.x);
+    fflush(stdout);
+    glutPostRedisplay();
+    glutTimerFunc(sleep, motionkotak, 0);
+}
+
+
+void display()
+{
+	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+	control();
+	garis();
+	glFlush();
+}
+
+void keyboard(unsigned char key, int x, int y)
+{
+	switch (key)
+	{
+	case 'a':
+		kotak1.x -= 1;
+		break;
+	case 's':
+		kotak1.y -= 1;
+		break;
+	case 'd':
+		kotak1.x += 1;
+		break;
+	case 'w':
+		kotak1.y += 1;
+		break;
+	default:
+		break;
+	}
+	glutPostRedisplay();
+}
+
+void key(int key, int x, int y)
+{
+	if (key == GLUT_KEY_UP)
+	{
+		kotak2.y += 1;
+	}
+	else if (key == GLUT_KEY_DOWN)
+	{
+		kotak2.y -= 1;
+	}
+	else if (key == GLUT_KEY_RIGHT)
+	{
+		kotak2.x += 1;
+	}
+	else if (key == GLUT_KEY_LEFT)
+	{
+		kotak2.x -= 1;
+	}
+	glutPostRedisplay();
+}
+
+void init(void)
+{
+	// glClearColor(1, 1, 0.0, 0.0);
+	glMatrixMode(GL_PROJECTION);
+	glLoadIdentity();
+	glutKeyboardFunc(keyboard);
+	glutSpecialFunc(key);
+	gluOrtho2D(ortho[0], ortho[1], ortho[2], ortho[3]);
+	glMatrixMode(GL_MODELVIEW);
+}
+
+int main(int argc, char *argv[])
+{
+	glutInit(&argc, argv);
+	glutInitDisplayMode(GLUT_RGB | GLUT_DEPTH);
+	glutInitWindowSize(500, 500);
+	glutInitWindowPosition(100, 100);
+	glutCreateWindow("Kubus");
+	init();
+	// motionkotak(1);
+	glutDisplayFunc(display);
+	glutMainLoop();
+	return 0;
+}
