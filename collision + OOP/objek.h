@@ -49,7 +49,20 @@ class cube //ini adalah kelas yang di includekan bersama dengan objek.h di main.
 		data[3] = height;
 		return data;
 	}
+
+	void displayText(int x, int y, int r, int g, int b, const char *string ) {
+         float x1 = x;
+         float y1 = y;
+	int j = strlen( string );
+
+	glColor3f( r, g, b );
+	glRasterPos2f( x1, y1 );
+	for( int i = 0; i < j; i++ ) {
+		glutBitmapCharacter( GLUT_BITMAP_TIMES_ROMAN_24, string[i] );
+	}
+}
 };
+
 
 cube::cube(int x_input, int y_input, int width_input, int height_input) //inisialisasi konstruktornya
 {
@@ -58,3 +71,4 @@ cube::cube(int x_input, int y_input, int width_input, int height_input) //inisia
 	x = x_input;
 	y = y_input;
 }
+
